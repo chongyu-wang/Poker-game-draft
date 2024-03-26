@@ -1,0 +1,84 @@
+Bob   BB
+     -Chips: 120
+     -Card1
+     -Card2
+     -Bet: (check/fold/call/raise)
+
+Name's turn: 
+Name's Decision
+
+Jon   SB
+     -Chips: 120
+     -Card1
+     -Card2
+     -Bet: (check/fold/call/raise)
+
+Name's turn: 
+Name's Decision
+
+Dog   D
+     -Chips: 120
+     -Card1
+     -Card2
+     -Bet: (check/fold/call/raise)
+
+Name's turn: 
+Name's Decision
+
+Cat
+     -Chips: 120
+     -Card1
+     -Card2
+     -Bet: (check/fold/call/raise)
+
+Name's turn: 
+Name's Decision
+
+Bat
+     -Chips: 120
+     -Card1
+     -Card2
+     -Bet: (check/fold/call/raise)
+
+Name's turn: 
+Name's Decision
+
+
+Bob   BB
+     -Chips: 120
+     -Card1
+     -Card2
+     -Bet: (check/fold/call/raise)
+
+Jon   SB
+     -Chips: 120
+     -Card1
+     -Card2
+     -Bet: (check/fold/call/raise)
+
+Dog   D
+     -Chips: 120
+     -Card1
+     -Card2
+     -Bet: (check/fold/call/raise)
+
+Cat
+     -Chips: 120
+     -Card1
+     -Card2
+     -Bet: (check/fold/call/raise)
+
+Bat
+     -Chips: 120
+     -Card1
+     -Card2
+     -Bet: (check/fold/call/raise)
+
+**********
+Card1
+Card2
+Card3
+**********
+
+Name's turn: 
+Name's Decision

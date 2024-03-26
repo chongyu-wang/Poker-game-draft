@@ -1,0 +1,269 @@
+const express = require("express");
+const bodyParser = require("body-parser");
+const Deck = require(__dirname +'/logic/deck.js');
+const player = require(__dirname + '/logic/player.js');
+const CircularQueue = require(__dirname + '/CircularQueue.js')
+const PokerTable = require(__dirname + '/logic/table.js');
+
+const app = express();
+
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(express.static(__dirname + "/views"));
+app.set('view engine', 'ejs');
+
+const NUMPLAYERS = 5;
+
+let table = [];
+let pokerTable = new PokerTable(NUMPLAYERS);
+let deck = new Deck();
+
+let choice = null;
+
+let CurrentPlayer = null;
+
+let curBet = 20;
+
+let potAmount = 0;
+
+let playersWent = 0;
+
+let curTurn = null;
+
+var isRaise = false;
+
+
+function populate(numPlayers) {
+    for (let i = 0; i < numPlayers; i++) {
+        let p = new player.Player("Player " + (i + 1));
+        pokerTable.addPlayer(p);
+        console.log(i);
+    }
+}
+
+function alternateBlinds() {
+    pokerTable.rotateBlinds();
+
+    getButtons();
+}
+function getButtons() {
+    for (let i = 0; i < pokerTable.playerlist.length; i++) {
+        pokerTable.playerlist[i].button = null;
+    }
+    pokerTable.getBB().button = "BB";
+    pokerTable.getSB().button = "SB";
+    pokerTable.getDealer().button = "Dealer";
+}
+
+function deal() {
+    for (let i = 0; i < pokerTable.playerlist.length; i++) {
+        let hand = new player.Hand(deck.popCard().filename, deck.popCard().filename);
+        pokerTable.playerlist[i].updateHand(hand);
+        console.log(pokerTable.playerlist[i]);
+
+    }
+}
+
+function addCard() {
+    let c = deck.popCard();
+    table.push(c.filename);
+}
+
+function preflop() {
+    pokerTable.playerlist.forEach(player => {
+        player.folded = false;
+    });
+    table = [];
+    deck = new Deck();
+    potAmount = 0;
+    curBet = 20;
+
+    deck.shuffleCards();
+
+    curTurn = "pf";
+    playersWent = 0;
+
+    alternateBlinds();
+    pokerTable.reset();
+
+    pokerTable.initCurrentPlayer("PF");
+    playersWent = 0;
+
+    addToPot(pokerTable.getBB(), 20);
+    addToPot(pokerTable.getSB(), 10);
+
+}
+
+function flop() {
+    curTurn = "f";
+    playersWent = 0;
+
+    pokerTable.initCurrentPlayer("F");
+    curBet = 0;
+    deck.popCard();
+    for (let i = 0; i < 3; i++) {
+        let c = deck.popCard();
+        table.push(c.filename);
+    }
+}
+
+function turn() {
+    curTurn = "t";
+    playersWent = 0;
+
+    pokerTable.initCurrentPlayer("F");
+    curBet = 0;
+    deck.popCard();
+    addCard();
+}
+
+function river() {
+    curTurn = "r";
+    playersWent = 0;
+
+    pokerTable.initCurrentPlayer("F");
+    curBet = 0;
+    deck.popCard();
+    addCard();
+}
+
+function getPlayerChoice(c) {
+    switch(c) {
+        case "Call":
+            call();
+            break;
+        case "Raise":
+            raise(potAmount);
+            break;
+        case "Check":
+            break;
+        case "Fold":
+            fold()
+            break;
+    }
+    pokerTable.switchCurrentPlayer();
+    isRaise = false;
+}
+
+function call() {
+    potAmount += pokerTable.getCurrentPlayer().bet(curBet);
+}
+
+function raise(amount) {
+    curBet = potAmount;
+    potAmount += pokerTable.getCurrentPlayer().bet(amount);
+    isRaise = true;
+}
+
+function check() {
+    console.log("Checked");
+}
+
+var foldAmount = 0;
+function fold() {
+    pokerTable.getCurrentPlayer().folded = true;
+    foldAmount++;
+}
+
+function addToPot(player, amount) {
+    potAmount += player.bet(amount);
+}
+
+function addCash(amount) {
+    for (let i = 0; i < pokerTable.playerlist.length; i++) {
+        pokerTable.playerlist[i].buyIn(amount);
+    }
+}
+
+function initialize() {
+    table = [];
+    pokerTable = new PokerTable(NUMPLAYERS);
+    deck = new Deck();
+    potAmount = 0;
+    curBet = 20;
+
+    deck.shuffleCards();
+    populate(NUMPLAYERS);
+    getButtons();
+    addCash(1200);
+    preflop();
+
+}
+
+function sortTurn(cT) {
+    pokerTable.activePlayers -= foldAmount;
+    foldAmount = 0;
+    switch(cT) {
+        case "pf":
+            flop();
+            break;
+        case "f":
+            turn();
+            break;
+        case "t":
+            river();
+            break;
+        case "r":
+            preflop();
+            deal();
+            break;
+    }
+}
+
+function getAdminChoice(choice) {
+    switch(choice) {
+        case "Initialize":
+            initialize();
+            break;
+        case "Deal":
+            deal();
+            break;
+        case "Turn":
+            turn();
+            break;
+        case "River":
+            river();
+            break;
+        case "Flop":
+            flop();
+            break;
+        case "Switch Blinds":
+            alternateBlinds();
+            break;
+    }
+}
+
+initialize();
+
+app.get("/", function(req, res) {
+    if (playersWent === pokerTable.activePlayers) {
+        sortTurn(curTurn);
+    }
+    res.render("home", {cards: table, 
+        players: pokerTable.playerlist, 
+        deck: deck, 
+        choice: choice,
+        currentplayer: pokerTable.getCurrentPlayer(),
+        potAmount: potAmount,
+        curBet: curBet
+    });
+
+});
+
+app.post("/", function(req, res) {
+    if (req.body["buttonPressed"]){
+        const buttonPressed = req.body.buttonPressed;
+        getPlayerChoice(buttonPressed);
+        playersWent++;
+    } else {
+        const adminButton = req.body.adminButton;
+        getAdminChoice(adminButton);
+    }
+    res.redirect("/");
+});
+
+
+
+app.listen("3000", function() {
+    console.log("Server running on port 3000")
+});

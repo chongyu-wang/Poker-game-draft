@@ -1,0 +1,138 @@
+/* body {
+    color: red;
+}
+
+.card {
+    width: 70px;
+} */
+
+body {
+    background-color: green;
+}
+.table {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+}
+.card {
+    height: 120px;
+    margin: 0 10px;
+}
+.seats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+.players {
+    display: flex;
+    justify-content: center;
+}
+.player {
+    margin: 0 20px;
+}
+.hand {
+    display: flex;
+    justify-content: center;
+}
+.profile {
+    background-color: #ffffff;
+    height: 80px;
+    width: 100px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: 2px solid #d3d3d3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+}
+
+.current-turn {
+    background-color: rgb(20, 219, 219);
+}
+
+.profile h1 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.profile h3 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: normal;
+    color: #a9a9a9;
+}
+
+.profile h3:first-child {
+    margin-bottom: 5px;
+}
+
+.profile h3:last-child {
+    margin-top: 5px;
+}
+
+.profile img {
+    height: 60%;
+    margin: 0;
+}
+
+.decision {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 20px;
+}
+  
+.decision button {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.decision button:hover {
+    background-color: #0069d9;
+}
+
+.admin-decision {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 20px;
+}
+  
+.admin-decision button {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 5px;
+    border: none;
+    background-color: #ffa200;
+    color: white;
+    cursor: pointer;
+}
+
+.admin-decision button:hover {
+    background-color: #ffa2004f;
+}
+
+.pot {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    color: gold;
+  }
+  
